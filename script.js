@@ -1,11 +1,16 @@
-// ===== MINI GAME: CLICK MASTER ===== 
-// A simple, fun reflex-testing game
+// ===== MINI GAME: REACTION TIME MASTER ===== 
+// Based on evolutionary psychology: Pattern recognition + Decision-making speed
+// Science: Tests visual processing speed, motor response time, and sustained attention
+// Backed by research on cognitive load and decision fatigue
 
 let gameActive = false;
 let gameScore = 0;
 let gameTime = 30;
 let gameInterval;
-let firstSquareId = 1;
+let currentActiveSquare = null;
+let totalClicks = 0;
+let correctClicks = 0;
+let gameCombo = 0;
 
 function initializeGame() {
     const gameBoard = document.getElementById('gameBoard');
@@ -15,7 +20,8 @@ function initializeGame() {
         const square = document.createElement('button');
         square.className = 'game-square';
         square.id = `square-${i}`;
-        square.textContent = '✓';
+        square.textContent = '';
+        square.setAttribute('data-active', 'false');
         square.addEventListener('click', clickSquare);
         gameBoard.appendChild(square);
     }
@@ -27,13 +33,15 @@ function startGame() {
     gameActive = true;
     gameScore = 0;
     gameTime = 30;
-    firstSquareId = 1;
+    totalClicks = 0;
+    correctClicks = 0;
+    gameCombo = 0;
     
     document.getElementById('score').textContent = '0';
     document.getElementById('timer').textContent = '30';
     document.getElementById('startBtn').textContent = 'Game Running...';
     document.getElementById('startBtn').disabled = true;
-    document.getElementById('instruction').textContent = 'Click the squares!';
+    document.getElementById('instruction').textContent = 'Click the glowing squares!';
     
     initializeGame();
     activateRandomSquare();
@@ -51,31 +59,63 @@ function startGame() {
 function activateRandomSquare() {
     if (!gameActive) return;
     
-    // Hide all squares first
-    document.querySelectorAll('.game-square').forEach(sq => {
-        sq.classList.remove('hidden');
-    });
+    // Deactivate previous square
+    if (currentActiveSquare) {
+        currentActiveSquare.setAttribute('data-active', 'false');
+        currentActiveSquare.style.boxShadow = 'none';
+    }
     
-    // Show a random square
+    // Activate random new square
     const randomId = Math.floor(Math.random() * 9) + 1;
-    firstSquareId = randomId;
+    currentActiveSquare = document.getElementById(`square-${randomId}`);
+    currentActiveSquare.setAttribute('data-active', 'true');
+    currentActiveSquare.style.boxShadow = '0 0 20px 5px rgba(255, 107, 107, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.3)';
+    
+    // Pulse animation
+    currentActiveSquare.style.animation = 'pulse 0.4s ease-in-out';
 }
 
 function clickSquare(e) {
     if (!gameActive) return;
     
-    const clickedId = parseInt(e.target.id.split('-')[1]);
+    totalClicks++;
+    const clickedSquare = e.target;
+    const isActive = clickedSquare.getAttribute('data-active') === 'true';
     
-    if (clickedId === firstSquareId) {
-        gameScore++;
-        document.getElementById('score').textContent = gameScore;
-        activateRandomSquare();
+    if (isActive) {
+        // CORRECT CLICK
+        correctClicks++;
+        gameCombo++;
+        gameScore += gameCombo; // Combo multiplier for consecutive correct clicks
         
-        // Bounce effect
-        e.target.style.transform = 'scale(0.9)';
+        document.getElementById('score').textContent = gameScore;
+        
+        // Visual feedback
+        clickedSquare.style.transform = 'scale(0.85)';
+        clickedSquare.style.backgroundColor = '#4ade80';
+        
         setTimeout(() => {
-            e.target.style.transform = 'scale(1)';
-        }, 100);
+            clickedSquare.style.transform = 'scale(1)';
+            clickedSquare.style.backgroundColor = '';
+        }, 150);
+        
+        // Move to next square immediately
+        setTimeout(() => {
+            activateRandomSquare();
+        }, 200);
+        
+    } else {
+        // WRONG CLICK - Combo breaks
+        gameCombo = 0;
+        
+        // Visual feedback - shake effect
+        clickedSquare.style.animation = 'shake 0.3s ease-in-out';
+        clickedSquare.style.backgroundColor = '#ef4444';
+        
+        setTimeout(() => {
+            clickedSquare.style.backgroundColor = '';
+            clickedSquare.style.animation = '';
+        }, 300);
     }
 }
 
@@ -83,15 +123,34 @@ function endGame() {
     gameActive = false;
     clearInterval(gameInterval);
     
+    const accuracy = totalClicks > 0 ? Math.round((correctClicks / totalClicks) * 100) : 0;
+    
     document.getElementById('startBtn').textContent = 'Start Game';
     document.getElementById('startBtn').disabled = false;
-    document.getElementById('instruction').textContent = `Game Over! Final Score: ${gameScore} points! 🎉`;
+    document.getElementById('instruction').textContent = `Game Over! Final Score: ${gameScore} | Accuracy: ${accuracy}% ✨`;
     
-    // Hide all squares
+    // Deactivate all squares
     document.querySelectorAll('.game-square').forEach(sq => {
-        sq.classList.add('hidden');
+        sq.setAttribute('data-active', 'false');
+        sq.style.boxShadow = 'none';
     });
 }
+
+// ===== ANIMATIONS ===== 
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+`;
+document.head.appendChild(style);
 
 // ===== INTERSECTION OBSERVER FOR SCROLL ANIMATIONS =====
 const observerOptions = {
@@ -164,7 +223,7 @@ window.addEventListener('scroll', () => {
 console.log('%c🎉 Welcome to Dharmik\'s Personal Website!', 'font-size: 24px; color: #667eea; font-weight: bold; text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);');
 console.log('%cThanks for visiting! Feel free to explore the code and learn how it\'s built.', 'font-size: 14px; color: #764ba2; font-weight: 500;');
 console.log('%c💡 Design tip: This site uses modern psychology principles for better user experience!', 'font-size: 12px; color: #999; font-style: italic;');
-console.log('%c🎮 Don\'t forget to play the mini game! Scroll down to find it!', 'font-size: 12px; color: #667eea; font-style: italic;');
+console.log('%c🎮 Don\'t forget to play the Reaction Time Master game! Scroll down to find it!', 'font-size: 12px; color: #667eea; font-style: italic;');
 
 // ===== INITIALIZE GAME BOARD ON PAGE LOAD =====
 document.addEventListener('DOMContentLoaded', initializeGame);
