@@ -1,5 +1,99 @@
+// ===== MINI GAME: CLICK MASTER ===== 
+// A simple, fun reflex-testing game
+
+let gameActive = false;
+let gameScore = 0;
+let gameTime = 30;
+let gameInterval;
+let firstSquareId = 1;
+
+function initializeGame() {
+    const gameBoard = document.getElementById('gameBoard');
+    gameBoard.innerHTML = '';
+    
+    for (let i = 1; i <= 9; i++) {
+        const square = document.createElement('button');
+        square.className = 'game-square';
+        square.id = `square-${i}`;
+        square.textContent = '✓';
+        square.addEventListener('click', clickSquare);
+        gameBoard.appendChild(square);
+    }
+}
+
+function startGame() {
+    if (gameActive) return;
+    
+    gameActive = true;
+    gameScore = 0;
+    gameTime = 30;
+    firstSquareId = 1;
+    
+    document.getElementById('score').textContent = '0';
+    document.getElementById('timer').textContent = '30';
+    document.getElementById('startBtn').textContent = 'Game Running...';
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('instruction').textContent = 'Click the squares!';
+    
+    initializeGame();
+    activateRandomSquare();
+    
+    gameInterval = setInterval(() => {
+        gameTime--;
+        document.getElementById('timer').textContent = gameTime;
+        
+        if (gameTime <= 0) {
+            endGame();
+        }
+    }, 1000);
+}
+
+function activateRandomSquare() {
+    if (!gameActive) return;
+    
+    // Hide all squares first
+    document.querySelectorAll('.game-square').forEach(sq => {
+        sq.classList.remove('hidden');
+    });
+    
+    // Show a random square
+    const randomId = Math.floor(Math.random() * 9) + 1;
+    firstSquareId = randomId;
+}
+
+function clickSquare(e) {
+    if (!gameActive) return;
+    
+    const clickedId = parseInt(e.target.id.split('-')[1]);
+    
+    if (clickedId === firstSquareId) {
+        gameScore++;
+        document.getElementById('score').textContent = gameScore;
+        activateRandomSquare();
+        
+        // Bounce effect
+        e.target.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            e.target.style.transform = 'scale(1)';
+        }, 100);
+    }
+}
+
+function endGame() {
+    gameActive = false;
+    clearInterval(gameInterval);
+    
+    document.getElementById('startBtn').textContent = 'Start Game';
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('instruction').textContent = `Game Over! Final Score: ${gameScore} points! 🎉`;
+    
+    // Hide all squares
+    document.querySelectorAll('.game-square').forEach(sq => {
+        sq.classList.add('hidden');
+    });
+}
+
 // ===== INTERSECTION OBSERVER FOR SCROLL ANIMATIONS =====
-// This makes elements fade in as they come into view (psychology: progressive disclosure)
 const observerOptions = {
     threshold: 0.15,
     rootMargin: '0px 0px -100px 0px'
@@ -20,7 +114,6 @@ document.querySelectorAll('.interest-card, .project-card, .journal-entry, .about
 });
 
 // ===== SMOOTH SCROLLING FOR NAVIGATION LINKS =====
-// Enhanced for better UX
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -37,7 +130,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ===== ACTIVE NAVIGATION LINK INDICATOR =====
-// Highlights current section (psychology: clear visual feedback)
 window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a');
@@ -60,7 +152,6 @@ window.addEventListener('scroll', () => {
 });
 
 // ===== PARALLAX EFFECT ON HERO =====
-// Subtle depth effect (psychology: dimension and engagement)
 window.addEventListener('scroll', () => {
     const hero = document.querySelector('.hero');
     if (hero) {
@@ -70,22 +161,10 @@ window.addEventListener('scroll', () => {
 });
 
 // ===== CONSOLE WELCOME MESSAGE =====
-// Easter egg for developers
 console.log('%c🎉 Welcome to Dharmik\'s Personal Website!', 'font-size: 24px; color: #667eea; font-weight: bold; text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);');
 console.log('%cThanks for visiting! Feel free to explore the code and learn how it\'s built.', 'font-size: 14px; color: #764ba2; font-weight: 500;');
 console.log('%c💡 Design tip: This site uses modern psychology principles for better user experience!', 'font-size: 12px; color: #999; font-style: italic;');
+console.log('%c🎮 Don\'t forget to play the mini game! Scroll down to find it!', 'font-size: 12px; color: #667eea; font-style: italic;');
 
-// ===== PERFORMANCE: LAZY LOAD ANIMATIONS =====
-// Only animate when visible (saves CPU)
-const lazyAnimateOnScroll = () => {
-    const elements = document.querySelectorAll('[data-animate]');
-    elements.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-            el.classList.add('animate');
-        }
-    });
-};
-
-window.addEventListener('scroll', lazyAnimateOnScroll);
-lazyAnimateOnScroll(); // Run on page load
+// ===== INITIALIZE GAME BOARD ON PAGE LOAD =====
+document.addEventListener('DOMContentLoaded', initializeGame);
