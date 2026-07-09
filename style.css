@@ -74,7 +74,7 @@ p {
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 3rem;
+    gap: 2rem;
 }
 
 .nav-links a {
@@ -383,6 +383,150 @@ p {
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+/* ===== MINI GAME SECTION ===== */
+.game-section {
+    padding: 120px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: drift 20s linear infinite;
+}
+
+.game-section .section-title,
+.game-section .section-title::after {
+    color: white;
+}
+
+.game-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    position: relative;
+    z-index: 2;
+}
+
+.game-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 20px;
+    max-width: 500px;
+    margin: 3rem auto 0;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+    min-height: 250px;
+}
+
+.game-square {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-square:hover {
+    transform: scale(1.05);
+}
+
+.game-square:active {
+    transform: scale(0.95);
+}
+
+.game-square.hidden {
+    visibility: hidden;
+}
+
+.btn-game {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+}
+
+.btn-game:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+}
+
+.btn-game:active {
+    transform: translateY(-1px);
+}
+
+.btn-game:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.game-instruction {
+    text-align: center;
+    font-size: 0.95rem;
+    margin-top: 1.5rem;
+    opacity: 0.9;
+}
+
 /* ===== LEARNING JOURNAL SECTION ===== */
 .journal {
     padding: 120px 24px;
@@ -577,8 +721,8 @@ p {
     }
 
     .nav-links {
-        gap: 1.5rem;
-        font-size: 0.9rem;
+        gap: 1rem;
+        font-size: 0.85rem;
     }
 
     .interests-grid {
@@ -606,8 +750,18 @@ p {
     .about,
     .projects,
     .journal,
-    .contact {
+    .contact,
+    .game-section {
         padding: 80px 20px;
+    }
+
+    .game-board {
+        grid-template-columns: repeat(3, 1fr);
+        min-height: 200px;
+    }
+
+    .game-square {
+        font-size: 1.5rem;
     }
 }
 
@@ -625,11 +779,20 @@ p {
     }
 
     .nav-links {
-        gap: 1rem;
-        font-size: 0.85rem;
+        gap: 0.8rem;
+        font-size: 0.75rem;
     }
 
     .container {
         padding: 0 16px;
+    }
+
+    .game-board {
+        min-height: 180px;
+        gap: 0.75rem;
+    }
+
+    .game-square {
+        font-size: 1.2rem;
     }
 }
